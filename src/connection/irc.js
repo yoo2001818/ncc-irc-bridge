@@ -7,8 +7,8 @@ function connect(config) {
   client.on('error', err => {
     console.log(err);
   });
-  return new Promise((resolve, reject) => {
-    client.on('registered', message => {
+  return new Promise(resolve => {
+    client.on('registered', () => {
       resolve(client);
     });
   });

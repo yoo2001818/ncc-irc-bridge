@@ -6,7 +6,7 @@ module.exports = {
   irc: {
     server: '',
     nick: '',
-    userName: 'nccircbridge',
+    userName: 'nccbridge',
     realName: 'Naver cafe chat - IRC bridge',
     port: 6667,
     // Any configuration accepted by node-irc is okay
