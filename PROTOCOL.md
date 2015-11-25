@@ -137,7 +137,7 @@ Whether if the user is the operator of the room. Defaults to false.
 #### options
 
 An object containing all the options from the server. IRC channel modes are
-used in here.
+written in here.
 
 ##### secret
 
