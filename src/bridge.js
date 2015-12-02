@@ -29,13 +29,14 @@ class Bridge {
     const roomId = mergeRoomId(message.transport, message.room);
     const pairList = this.pairs[roomId];
     console.log(message);
+    if (message.message.startsWith('!pair ')) {
+      const target = message.message.slice(6);
+      this.pair(roomId, target);
+      return;
+    }
+    if (message.sent === true) return;
     if (pairList == null) return;
-    console.log(pairList);
-    pairList.forEach(to => {
-      const transportId = getTransportId(to);
-      const roomId = getRoomId(to);
-      this.transports[transportId].send(roomId, message);
-    });
+    pairList.forEach(to => this.relay(to, message));
   }
   join(id) {
     const transportId = getTransportId(id);
@@ -50,6 +51,18 @@ class Bridge {
     pairList.push(to);
     this.pairs[from] = pairList;
     // Notify connection TODO
+    this.send(from, `Paired to ${to} as sender.`);
+    this.send(to, `Paired to ${from} as listener.`);
+  }
+  send(to, message) {
+    const transportId = getTransportId(to);
+    const roomId = getRoomId(to);
+    this.transports[transportId].send(roomId, message);
+  }
+  relay(to, message) {
+    const transportId = getTransportId(to);
+    const roomId = getRoomId(to);
+    this.transports[transportId].relay(roomId, message);
   }
 }
 

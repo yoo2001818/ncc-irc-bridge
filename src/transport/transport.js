@@ -17,13 +17,16 @@ class Transport {
     this.bridge.handleMessage(message);
   }
   join(room) { // eslint-disable-line no-unused-vars
-    throw new Error('Send is not implemented by subclass');
+    throw new Error('Join is not implemented by subclass');
   }
   leave(room) { // eslint-disable-line no-unused-vars
-    throw new Error('Send is not implemented by subclass');
+    throw new Error('Leave is not implemented by subclass');
   }
   send(room, message) { // eslint-disable-line no-unused-vars
     throw new Error('Send is not implemented by subclass');
+  }
+  relay(room, message) { // eslint-disable-line no-unused-vars
+    this.send(room, message.user.nickname + ': ' + message.message);
   }
 }
 
