@@ -1,7 +1,8 @@
 'use strict';
 
-const config = require('./config/auth.js');
-const pairConfig = require('./config/pair.js');
+const configDir = require('./configDir');
+const config = require(configDir + '/auth.js');
+const pairConfig = require(configDir + '/pair.js');
 
 let irc, ncc;
 
