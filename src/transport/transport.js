@@ -1,5 +1,7 @@
 'use strict';
 
+const translateMessage = require('../utils/translateMessage');
+
 class Transport {
   constructor() {
     this.bridge = null;
@@ -26,7 +28,7 @@ class Transport {
     throw new Error('Send is not implemented by subclass');
   }
   relay(room, message) { // eslint-disable-line no-unused-vars
-    this.send(room, message.user.nickname + ': ' + message.message);
+    this.send(room, translateMessage(message));
   }
 }
 

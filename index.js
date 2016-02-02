@@ -1,6 +1,7 @@
 'use strict';
 
 const config = require('./config/auth.js');
+const pairConfig = require('./config/pair.js');
 
 let irc, ncc;
 
@@ -23,4 +24,11 @@ Promise.all([
   console.log('Connected to both server.');
   bridge.connect('irc', new IRCTransport(irc));
   bridge.connect('ncc', new NccTransport(ncc));
-});
+  // Good enough, pair the connections.
+  for (let fromId in pairConfig) {
+    for (let toId of pairConfig[fromId]) {
+      bridge.pair(fromId, toId);
+    }
+  }
+})
+.catch(e => console.log(e.stack));

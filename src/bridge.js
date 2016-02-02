@@ -1,5 +1,8 @@
 'use strict';
 
+const LOG_DISPLAY_FORMAT = '[%t] %r - %n : %m';
+const formatMessage = require('./utils/formatMessage');
+
 function mergeRoomId(transport, room) {
   return transport + '!' + room;
 }
@@ -28,13 +31,13 @@ class Bridge {
   handleMessage(message) {
     const roomId = mergeRoomId(message.transport, message.room);
     const pairList = this.pairs[roomId];
-    console.log(message);
-    if (message.message.startsWith('!pair ')) {
+    /*if (message.message.startsWith('!pair ')) {
       const target = message.message.slice(6);
       this.pair(roomId, target);
       return;
-    }
+    }*/
     if (message.sent === true) return;
+    console.log(formatMessage(message, LOG_DISPLAY_FORMAT));
     if (pairList == null) return;
     pairList.forEach(to => this.relay(to, message));
   }
@@ -51,8 +54,8 @@ class Bridge {
     pairList.push(to);
     this.pairs[from] = pairList;
     // Notify connection TODO
-    this.send(from, `Paired to ${to} as sender.`);
-    this.send(to, `Paired to ${from} as listener.`);
+    // this.send(from, `Paired to ${to} as sender.`);
+    // this.send(to, `Paired to ${from} as listener.`);
   }
   send(to, message) {
     const transportId = getTransportId(to);
