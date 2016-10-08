@@ -24,7 +24,7 @@ class IRCTransport extends Transport {
         this.notifyUser('image', {
           id: userID,
           nickname: user
-        }, channelID, message ? (message + ': ') : '' + attachments[0].url);
+        }, channelID, (message ? (message + ': ') : '') + attachments[0].url);
         return;
       }
       this.notifyUser('text', {
