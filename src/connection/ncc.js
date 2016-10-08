@@ -4,6 +4,7 @@ const ncc = require('node-ncc-es6');
 const fs = require('fs');
 
 function connect(config) {
+  if (config == null) return Promise.resolve(null);
   const credentials = new ncc.Credentials(
     config.username,
     config.password

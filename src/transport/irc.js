@@ -18,6 +18,7 @@ class IRCTransport extends Transport {
   }
   constructor(connection) {
     super();
+    if (connection == null) return;
     this.connection = connection;
     connection.on('message', (from, to, message) => {
       this.notifyUser('text', from, to, message);

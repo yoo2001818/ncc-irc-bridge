@@ -17,6 +17,7 @@ function getRoomId(roomId) {
 class NccTransport extends Transport {
   constructor(connection) {
     super();
+    if (connection == null) return;
     this.connection = connection;
     connection.on('message', message => {
       this.notify(Object.assign({}, message, {

@@ -13,5 +13,8 @@ module.exports = {
     port: 6667
     // Any configuration accepted by node-irc is okay
     // https://node-irc.readthedocs.org/en/latest/API.html#client
+  },
+  discord: {
+    token: ''
   }
 };

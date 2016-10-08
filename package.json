@@ -18,7 +18,8 @@
   "homepage": "https://github.com/yoo2001818/ncc-irc-bridge#readme",
   "dependencies": {
     "continuation-local-storage": "^3.1.4",
+    "discord.io": "^2.2.3",
     "irc": "^0.4.0",
-    "node-ncc-es6": "^0.3.0"
+    "node-ncc-es6": "^0.3.1"
   }
 }

@@ -1,15 +1,21 @@
 'use strict';
 
-const irc = require('irc');
+const Discord = require('discord.io');
 
 function connect(config) {
   if (config == null) return Promise.resolve(null);
-  const client = new irc.Client(config.server, config.nick, config);
+  const client = new Discord.Client({
+    token: config.token,
+    autorun: true
+  });
   client.on('error', err => {
     console.log(err);
   });
+  client.on('disconnect', () => {
+    client.connect();
+  });
   return new Promise(resolve => {
-    client.on('registered', () => {
+    client.on('ready', () => {
       resolve(client);
     });
   });
