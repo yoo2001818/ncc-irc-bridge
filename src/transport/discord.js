@@ -19,17 +19,21 @@ class IRCTransport extends Transport {
     this.connection = connection;
     connection.on('message', (user, userID, channelID, message, event) => {
       if (userID === connection.id) return;
+      let channel = connection.channels[channelID];
+      let server = connection.servers[channel.guild_id];
+      let member = server.members[userID];
+      let nick = member.nick || user;
       let attachments = event.d.attachments;
       if (attachments.length >= 1) {
         this.notifyUser('image', {
           id: userID,
-          nickname: user
+          nickname: nick
         }, channelID, (message ? (message + ': ') : '') + attachments[0].url);
         return;
       }
       this.notifyUser('text', {
         id: userID,
-        nickname: user
+        nickname: nick
       }, channelID, message);
     });
     this.rooms = {};
