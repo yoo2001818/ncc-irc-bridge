@@ -78,7 +78,7 @@ class NccTransport extends Transport {
                 id: getCafeId(room)
               }
             }, image);
-          }, 100);
+          }, 2000);
         });
       }, error => {
         // Just do it traditionally
