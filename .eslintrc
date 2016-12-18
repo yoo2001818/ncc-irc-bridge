@@ -21,9 +21,12 @@
       80,
       2
     ],
-    "space-after-keywords": [
+    "keyword-spacing": [
       2,
-      "always"
+      {
+        "before": true,
+        "after": true
+      }
     ],
     "space-before-blocks": [
       2,

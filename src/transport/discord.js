@@ -24,17 +24,25 @@ class IRCTransport extends Transport {
       let member = server.members[userID];
       let nick = member.nick || user;
       let attachments = event.d.attachments;
+      // console.log(attachments);
       if (attachments.length >= 1) {
         this.notifyUser('image', {
           id: userID,
           nickname: nick
-        }, channelID, (message ? (message + ': ') : '') + attachments[0].url);
+        }, channelID, (message ? (message + ': ') : '') + attachments[0].url, {
+          image: attachments[0].url,
+          filename: attachments[0].filename,
+          comment: message
+        });
         return;
       }
       this.notifyUser('text', {
         id: userID,
         nickname: nick
       }, channelID, message);
+    });
+    connection.on('disconnect', () => {
+      connection.connect();
     });
     this.rooms = {};
   }
