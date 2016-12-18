@@ -71,12 +71,14 @@ class NccTransport extends Transport {
         }
         let text = formatMessage(message, comment);
         this.send(room, text).then(() => {
-          this.connection.sendImage({
-            id: getRoomId(room),
-            cafe: {
-              id: getCafeId(room)
-            }
-          }, image);
+          setTimeout(() => {
+            this.connection.sendImage({
+              id: getRoomId(room),
+              cafe: {
+                id: getCafeId(room)
+              }
+            }, image);
+          }, 100);
         });
       }, error => {
         // Just do it traditionally
