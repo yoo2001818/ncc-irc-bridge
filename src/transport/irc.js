@@ -20,34 +20,34 @@ class IRCTransport extends Transport {
     super();
     if (connection == null) return;
     this.connection = connection;
-    connection.on('message', (from, to, message) => {
+    connection.on('message', ({ from, to, message }) => {
       this.notifyUser('text', from, to, message);
     });
-    connection.on('notice', (from, to, message) => {
+    connection.on('notice', ({ from, to, message }) => {
       this.notifyUser('text', from, to, message);
     });
-    connection.on('action', (from, to, text, message) => {
-      this.notifyUser('action', from, to, message.args[1].slice(8, -1));
+    connection.on('action', ({ from, to, message }) => {
+      this.notifyUser('action', from, to, message.slice(8, -1));
     });
-    connection.on('join', (to, from) => {
+    /* connection.on('join', ({ to, from }) => {
       this.notifyUser('join', from, to, from);
     });
-    connection.on('part', (to, from, reason) => {
+    connection.on('part', ({ to, from, reason }) => {
       this.notifyUser('leave', from, to, from, { reason });
     });
-    connection.on('quit', (from, reason, tos) => {
+    connection.on('quit', ({ from, reason, tos }) => {
       tos.forEach(to => this.notifyUser('leave', from, to, from, { reason }));
     });
-    connection.on('kill', (from, reason, tos) => {
+    connection.on('kill', ({ from, reason, tos }) => {
       tos.forEach(to => this.notifyUser('leave', from, to, from, { reason }));
-    });
+    }); */
     this.rooms = {};
   }
   join(room) {
     this.connection.join(room);
   }
   send(room, message) {
-    this.connection.say(room, message);
+    this.connection.send(room, message);
   }
 }
 
