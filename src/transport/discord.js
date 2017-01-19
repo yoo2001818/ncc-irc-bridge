@@ -2,7 +2,7 @@
 
 const Transport = require('./transport.js');
 
-class IRCTransport extends Transport {
+class DiscordTransport extends Transport {
   notifyUser(type, user, to, message, additionalProps) {
     this.notify(Object.assign({
       type: type,
@@ -16,9 +16,12 @@ class IRCTransport extends Transport {
   constructor(connection) {
     super();
     if (connection == null) return;
+    this.lastID = null;
     this.connection = connection;
     connection.on('message', (user, userID, channelID, message, event) => {
+      if (this.lastID === event.d.id) return;
       if (userID === connection.id) return;
+      this.lastID = event.d.id;
       let channel = connection.channels[channelID];
       let server = connection.servers[channel.guild_id];
       let member = server.members[userID];
@@ -59,4 +62,4 @@ class IRCTransport extends Transport {
   }
 }
 
-module.exports = IRCTransport;
+module.exports = DiscordTransport;
