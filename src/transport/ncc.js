@@ -30,6 +30,7 @@ class NccTransport extends Transport {
       }));
     });
     this.rooms = {};
+    this.lastTalkers = {};
   }
   join(room) {
     let cafeId = getCafeId(room);
@@ -51,6 +52,8 @@ class NccTransport extends Transport {
     }, message);
   }
   relay(room, message) {
+    let lastTalker = this.lastTalkers[room];
+    this.lastTalkers[room] = message.user.id;
     if (message.type === 'image') {
       let filename = message.filename;
       if (filename == null) {
@@ -66,20 +69,31 @@ class NccTransport extends Transport {
       }).then(image => {
         console.log(image);
         let comment = '%n: 사진을 보냈습니다:';
+        let sendSubtitle = lastTalker !== message.user.id;
         if (message.comment) {
           comment = '%n: 사진을 보냈습니다: ' + message.comment;
+          sendSubtitle = true;
         }
-        let text = formatMessage(message, comment);
-        this.send(room, text).then(() => {
-          setTimeout(() => {
-            this.connection.sendImage({
-              id: getRoomId(room),
-              cafe: {
-                id: getCafeId(room)
-              }
-            }, image);
-          }, 2000);
-        });
+        if (sendSubtitle) {
+          let text = formatMessage(message, comment);
+          this.send(room, text).then(() => {
+            setTimeout(() => {
+              this.connection.sendImage({
+                id: getRoomId(room),
+                cafe: {
+                  id: getCafeId(room)
+                }
+              }, image);
+            }, 2000);
+          });
+        } else {
+          this.connection.sendImage({
+            id: getRoomId(room),
+            cafe: {
+              id: getCafeId(room)
+            }
+          }, image);
+        }
       }, error => {
         // Just do it traditionally
         console.log(error);
