@@ -17,7 +17,7 @@ function connect(config) {
     console.log(err);
   });
   return new Promise(resolve => {
-    client.on('motd', () => {
+    client.on('welcome', () => {
       resolve(client);
     });
   });
