@@ -11,8 +11,12 @@ function connect(config) {
   client.on('error', err => {
     console.log(err);
   });
-  client.on('disconnect', () => {
-    client.connect();
+  client.on('disconnect', (msg, code) => {
+    if (code === 0) console.error(msg);
+    setTimeout(() => {
+      client.connected = false;
+      client.connect();
+    }, 1000);
   });
   return new Promise(resolve => {
     client.on('ready', () => {
