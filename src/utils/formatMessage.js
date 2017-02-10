@@ -11,15 +11,16 @@ function formatMessage(message, format) {
   var dateFormatted = time.getFullYear()+'/'+pad(time.getMonth()+1)+'/'+
     pad(time.getDate());
   var formattedMessage = format;
-  formattedMessage = formattedMessage.replace('%d', dateFormatted);
-  formattedMessage = formattedMessage.replace('%t', timeFormatted);
+  formattedMessage = formattedMessage.replace('%d', () => dateFormatted);
+  formattedMessage = formattedMessage.replace('%t', () => timeFormatted);
   formattedMessage = formattedMessage.replace('%r',
-    message.roomObj ? message.roomObj.name : message.room);
-  formattedMessage = formattedMessage.replace('%R', message.room);
-  formattedMessage = formattedMessage.replace('%n', message.user.nickname);
-  formattedMessage = formattedMessage.replace('%i', message.user.id);
+    () => message.roomObj ? message.roomObj.name : message.room);
+  formattedMessage = formattedMessage.replace('%R', () => message.room);
+  formattedMessage = formattedMessage.replace('%n', () =>
+    message.user.nickname);
+  formattedMessage = formattedMessage.replace('%i', () => message.user.id);
   // We might want to translate this to text representation.
-  formattedMessage = formattedMessage.replace('%m', message.message);
+  formattedMessage = formattedMessage.replace('%m', () => message.message);
   return formattedMessage;
 }
 
