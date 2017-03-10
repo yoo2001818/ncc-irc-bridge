@@ -23,6 +23,7 @@ class DiscordTransport extends Transport {
       if (userID === connection.id) return;
       this.lastID = event.d.id;
       let channel = connection.channels[channelID];
+      if (channel == null) return;
       let server = connection.servers[channel.guild_id];
       let member = server.members[userID];
       let nick = member.nick || user;
