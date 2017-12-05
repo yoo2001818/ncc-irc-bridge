@@ -10,56 +10,65 @@ class DiscordTransport extends Transport {
       time: new Date(),
       user: user,
       message: message,
-      sent: false
+      sent: false,
     }, additionalProps || {}));
   }
-  constructor(connection) {
+  constructor(connection, config) {
     super();
     if (connection == null) return;
     this.lastID = null;
+    this.config = config;
     this.connection = connection;
-    connection.on('message', (user, userID, channelID, message, event) => {
-      if (this.lastID === event.d.id) return;
-      if (userID === connection.id) return;
-      this.lastID = event.d.id;
-      let channel = connection.channels[channelID];
-      if (channel == null) return;
-      let server = connection.servers[channel.guild_id];
-      let member = server.members[userID];
-      let nick = member.nick || user;
-      let attachments = event.d.attachments;
+    connection.on('message', (message) => {
+      if (this.lastID === message.id) return;
+      if (message.author.id === connection.user.id) return;
+      this.lastID = message.id;
+      let channel = message.channel;
+      let user = message.author;
+      let nick = (message.member && message.member.displayName)
+        || user.username;
+      let attachments = message.attachments.array();
       // console.log(attachments);
       if (attachments.length >= 1) {
         this.notifyUser('image', {
-          id: userID,
+          id: user.id,
           nickname: nick
-        }, channelID, (message ? (message + ': ') : '') + attachments[0].url, {
+        }, channel.id, (message ? (message + ': ') : '') + attachments[0].url, {
           image: attachments[0].url,
           filename: attachments[0].filename,
-          comment: message
+          comment: message.content
         });
         return;
       }
       this.notifyUser('text', {
-        id: userID,
+        id: user.id,
         nickname: nick
-      }, channelID, message);
+      }, channel.id, message.content);
     });
     connection.on('disconnect', () => {
       connection.connect();
     });
     this.rooms = {};
   }
-  join(room) {
+  join() {
     // this.connection.join(room);
   }
   send(room, message, retries = 0) {
+    let channel = this.connection.channels.get(room);
+    if (channel == null) return;
+    return channel.send(message)
+      .catch(e => {
+        if (retries < 3) return this.send(room, message, retries + 1);
+        throw e;
+      });
+    /*
     this.connection.sendMessage({
       to: room,
       message
     }, (error) => {
       if (error && retries < 3) this.send(room, message, retries + 1);
     });
+    */
   }
 }
 

@@ -27,8 +27,8 @@ class Transport {
   send(room, message) { // eslint-disable-line no-unused-vars
     throw new Error('Send is not implemented by subclass');
   }
-  relay(room, message) { // eslint-disable-line no-unused-vars
-    this.send(room, translateMessage(message));
+  relay(room, message, config) {
+    this.send(room, translateMessage(message, config));
   }
 }
 

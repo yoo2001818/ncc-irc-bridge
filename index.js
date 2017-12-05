@@ -4,37 +4,43 @@ const configDir = require('./configDir');
 const config = require(configDir + '/auth.js');
 const pairConfig = require(configDir + '/pair.js');
 
-let irc, ncc, discord;
-
-const ircConnect = require('./src/connection/irc.js');
-const nccConnect = require('./src/connection/ncc.js');
-const discordConnect = require('./src/connection/discord.js');
-
-const IRCTransport = require('./src/transport/irc.js');
-const NccTransport = require('./src/transport/ncc.js');
-const DiscordTransport = require('./src/transport/discord.js');
 const Bridge = require('./src/bridge.js');
 
 let bridge = new Bridge();
 
-Promise.all([
-  ircConnect(config.irc)
-  .then(client => irc = client),
-  nccConnect(config.ncc)
-  .then(client => ncc = client),
-  discordConnect(config.discord)
-  .then(client => discord = client)
-])
-.then(() => {
-  console.log('Connected to both server.');
-  bridge.connect('irc', new IRCTransport(irc));
-  bridge.connect('ncc', new NccTransport(ncc));
-  bridge.connect('discord', new DiscordTransport(discord));
-  // Good enough, pair the connections.
-  for (let fromId in pairConfig) {
-    for (let toId of pairConfig[fromId]) {
-      bridge.pair(fromId, toId);
+const protocols = {
+  irc: {
+    connect: require('./src/connection/irc.js'),
+    transport: require('./src/transport/irc.js'),
+  },
+  ncc: {
+    connect: require('./src/connection/ncc.js'),
+    transport: require('./src/transport/ncc.js'),
+  },
+  discord: {
+    connect: require('./src/connection/discord.js'),
+    transport: require('./src/transport/discord.js'),
+  },
+};
+
+let promises = [];
+for (let key in config) {
+  if (config[key] == null) continue;
+  let protocol = protocols[key];
+  if (protocol == null) continue;
+  let { connect, transport } = protocol;
+  promises.push(connect(config[key])
+    .then(v => bridge.connect(key, new transport(v))));
+}
+
+Promise.all(promises)
+  .then(() => {
+    console.log('Connected to all servers.');
+    // Good enough, pair the connections.
+    for (let fromId in pairConfig) {
+      for (let toId of pairConfig[fromId]) {
+        bridge.pair(fromId, toId);
+      }
     }
-  }
-})
-.catch(e => console.log(e.stack));
+  })
+  .catch(e => console.log(e.stack));

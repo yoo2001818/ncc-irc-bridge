@@ -12,7 +12,30 @@ function getTransportId(roomId) {
 }
 
 function getRoomId(roomId) {
-  return roomId.slice(roomId.indexOf('!') + 1);
+  if (roomId.indexOf('$') !== -1) {
+    return roomId.slice(roomId.indexOf('!') + 1, roomId.indexOf('$'));
+  } else {
+    return roomId.slice(roomId.indexOf('!') + 1);
+  }
+}
+
+function stripRoomId(roomId) {
+  if (roomId.indexOf('$') !== -1) {
+    return roomId.slice(0, roomId.indexOf('$'));
+  } else {
+    return roomId.slice(0);
+  }
+}
+
+function getConfig(roomId) {
+  let pos = roomId.indexOf('$');
+  if (pos === -1) return {};
+  let str = roomId.slice(0, pos);
+  let output = {};
+  str.split('').forEach(v => {
+    if (v === 's') output.singleMode = true;
+  });
+  return output;
 }
 
 class Bridge {
@@ -39,7 +62,11 @@ class Bridge {
     if (message.sent === true) return;
     console.log(formatMessage(message, LOG_DISPLAY_FORMAT));
     if (pairList == null) return;
-    pairList.forEach(to => this.relay(to, message));
+    pairList.forEach(entry => {
+      entry.list.forEach(to => {
+        this.relay(to, message, entry.config);
+      });
+    });
   }
   join(id) {
     const transportId = getTransportId(id);
@@ -50,9 +77,16 @@ class Bridge {
     // Join both room! :P
     this.join(from);
     this.join(to);
-    let pairList = this.pairs[from] || [];
-    pairList.push(to);
-    this.pairs[from] = pairList;
+    let fromId = stripRoomId(from);
+    let config = getConfig(from);
+    let pairList = this.pairs[fromId];
+    if (pairList == null) this.pairs[fromId] = pairList = [];
+    let entry = pairList.find(v => v.id === from);
+    if (entry == null) {
+      entry = { id: from, config, list: [] };
+      pairList.push(entry);
+    }
+    entry.list.push(to);
     // Notify connection TODO
     // this.send(from, `Paired to ${to} as sender.`);
     // this.send(to, `Paired to ${from} as listener.`);
@@ -62,10 +96,10 @@ class Bridge {
     const roomId = getRoomId(to);
     this.transports[transportId].send(roomId, message);
   }
-  relay(to, message) {
+  relay(to, message, config) {
     const transportId = getTransportId(to);
     const roomId = getRoomId(to);
-    this.transports[transportId].relay(roomId, message);
+    this.transports[transportId].relay(roomId, message, config);
   }
 }
 

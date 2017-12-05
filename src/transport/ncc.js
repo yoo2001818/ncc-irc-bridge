@@ -51,7 +51,7 @@ class NccTransport extends Transport {
       }
     }, message);
   }
-  relay(room, message) {
+  relay(room, message, config) {
     let lastTalker = this.lastTalkers[room];
     this.lastTalkers[room] = message.user.id;
     if (message.type === 'image') {
@@ -74,6 +74,7 @@ class NccTransport extends Transport {
           comment = '%n: 사진을 보냈습니다: ' + message.comment;
           sendSubtitle = true;
         }
+        if (config.singleMode) sendSubtitle = false;
         if (sendSubtitle) {
           let text = formatMessage(message, comment);
           this.send(room, text).then(() => {
@@ -97,11 +98,11 @@ class NccTransport extends Transport {
       }, error => {
         // Just do it traditionally
         console.log(error);
-        super.relay(room, message);
+        super.relay(room, message, config);
       });
       return;
     }
-    super.relay(room, message);
+    super.relay(room, message, config);
   }
 }
 

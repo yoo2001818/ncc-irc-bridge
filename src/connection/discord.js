@@ -1,13 +1,10 @@
 'use strict';
 
-const Discord = require('discord.io');
+const Discord = require('discord.js');
 
 function connect(config) {
   if (config == null) return Promise.resolve(null);
-  const client = new Discord.Client({
-    token: config.token,
-    autorun: true
-  });
+  const client = new Discord.Client();
   client.on('error', err => {
     console.log(err);
   });
@@ -19,6 +16,7 @@ function connect(config) {
     }, 1000);
   });
   return new Promise(resolve => {
+    client.login(config.token);
     client.on('ready', () => {
       resolve(client);
     });

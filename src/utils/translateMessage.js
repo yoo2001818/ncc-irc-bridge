@@ -2,7 +2,7 @@
 
 const formatMessage = require('./formatMessage');
 
-function translateMessage(message) {
+function translateMessage(message, config = {}) {
   switch (message.type) {
   case 'image':
     return formatMessage(message, '%n: 사진: %m');
@@ -26,7 +26,7 @@ function translateMessage(message) {
     return formatMessage(message, '%n님이 외칩니다: %m');
   case 'text':
   default:
-    return formatMessage(message, '%n: %m');
+    return formatMessage(message, config.singleMode ? '%m' : '%n: %m');
   }
 }
 
