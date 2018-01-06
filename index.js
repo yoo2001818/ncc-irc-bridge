@@ -26,10 +26,11 @@ const protocols = {
 let promises = [];
 for (let key in config) {
   if (config[key] == null) continue;
-  let protocol = protocols[key];
+  let type = config[key].type || key;
+  let protocol = protocols[type];
   if (protocol == null) continue;
   let { connect, transport } = protocol;
-  promises.push(connect(config[key])
+  promises.push(connect(config[key], key)
     .then(v => bridge.connect(key, new transport(v))));
 }
 

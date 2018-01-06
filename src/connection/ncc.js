@@ -3,7 +3,7 @@
 const ncc = require('node-ncc-es6');
 const fs = require('fs');
 
-function connect(config) {
+function connect(config, name) {
   if (config == null) return Promise.resolve(null);
   const credentials = new ncc.Credentials(
     config.username,
@@ -12,7 +12,7 @@ function connect(config) {
   const session = new ncc.Session(credentials);
 
   return new Promise((resolve, reject) => {
-    fs.readFile('./config/cookie.json', 'utf8', (err, data) => {
+    fs.readFile('./config/cookie-' + name + '.json', 'utf8', (err, data) => {
       if (err) return reject(err);
       return resolve(data);
     });
@@ -26,7 +26,7 @@ function connect(config) {
   }, () => {
     console.log('Logging into Naver');
     return credentials.login()
-      .then(() => fs.writeFile('./config/cookie.json',
+      .then(() => fs.writeFile('./config/cookie-' + name +'.json',
         JSON.stringify(credentials.getCookieJar())));
   })
   .then(() => console.log('Connecting to Naver cafe chat...'))
